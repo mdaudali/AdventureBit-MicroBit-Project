@@ -9,18 +9,18 @@ grid=[[0,0,0,0,0],
 x=2
 y=2
 
-def gridToImage(grid):
+def Draw(grid):
     tx = ""
     for x in grid:
         for y in x:
             tx+=str(y)
         tx+=":"
-    return tx
+    display.show(Image(tx))
             
             
 while True:
     grid[x][y] = 9          
-    display.show(Image(gridToImage(grid)))       
+    Draw(grid)     
     sleep(100)
     
 
