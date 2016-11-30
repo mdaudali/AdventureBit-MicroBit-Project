@@ -28,29 +28,36 @@ class Comm:
         return data
 
 class Player:
-	def __init__(self):
-		self.lvl = 1
-		self.hp = 10
+    def __init__(self):
+        self.lvl = 1
+        self.hp = 10
 
-	def attack(self):
-		Comm(42).send_command("attack", self.lvl)
+    def attack(self):
+        com.send_command("attack", self.lvl)
+        resp = com.wait_for_command()
+        while 1:
+            if resp["command"] == "health":
+                health = resp["value"]
+                break
 
-	def takeDamage(self, damage):
-		self.hp -= damage
+    def takeDamage(self, damage):
+        self.hp -= damage
 
-	def displayHealth(self,board):
-		lights = self.hp*10
-		board = [[0 for x in range(w)] for y in range(h)]
-		for i in range(5):
-			if lights>=i*20+20:
-				for y in range(5):
-					board[i][y] = 9
-		return board
-
+    def displayHealth(self,board):
+        lights = self.hp*10
+        board = [[0 for x in range(w)] for y in range(h)]
+        for i in range(5):
+            if lights>=i*20+20:
+                for y in range(5):
+                    board[i][y] = 9
+        return board
+        
+com = Comm(42)
 w, h = 5,5
 grid = [[0 for x in range(w)] for y in range(h)]
 tim = Player()
 while 1:
-    if button_a.is_pressed():
+    if button_a.get_presses() > 0:
         tim.attack()
+    
 
