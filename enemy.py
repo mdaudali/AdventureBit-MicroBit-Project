@@ -4,7 +4,8 @@ from utilities import Communicator
 
 class Enemy:
     def __init__(self):
-        self.health = 10
+        self.max_health = 10
+        self.health = self.max_health
         self.attack = 10
         self.level = 2
         # self.defence = 0.5
@@ -18,11 +19,11 @@ class Enemy:
         com.send_command("health", self.health)
 
     def display_health(self):
-        lights = self.health * 10
+        lights = (self.health/self.max_health) * 100
         board = [["0" for x in range(5)] for y in range(5)]
         for i in range(5):
             if lights >= i * 20 + 20:
-                board[i][0] = "9"
+                board[0][i] = "9"
         return Image(':'.join([''.join(vals) for vals in board]))
 
     def aoe_attack(self):
