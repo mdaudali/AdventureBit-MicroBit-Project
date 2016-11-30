@@ -1,47 +1,45 @@
 from microbit import *
 import radio
-
+from utilities import Communicator
 
 class Enemy:
     def __init__(self):
-        self.health = 100
+        self.health = 10
         self.attack = 10
+        self.level = 2
         # self.defence = 0.5
         # self.sp_defence = 0.5
 
     def take_damage(self, damage):
-        self.health -= damage
+        self.health -= int(damage)
         return self.health
 
+    def send_health(self):
+        com.send_command("health", self.health)
 
-class Communication:
-    def __init__(self, group):
-        self.group = group
-        radio.on()
-        radio.config(group=group)
+    def display_health(self):
+        lights = self.health * 10
+        board = [["0" for x in range(5)] for y in range(5)]
+        for i in range(5):
+            if lights >= i * 20 + 20:
+                board[i][0] = "9"
+        return Image(':'.join([''.join(vals) for vals in board]))
 
-    def send_command(self, command, value):
-        vals = {}
-        vals["command"] = command
-        vals["value"] = value
-        data = ":".join([str(x) + "," + str(vals[x]) for x in vals])
-        radio.send(data)
+    def aoe_attack(self):
+        com.send_command("attack", self.level)
 
-    def wait_for_command(self):
-        while True:
-            msg = radio.receive()
-            if msg:
-                break
-        vals = msg.split(":")
-        data = {}
-        for x in vals:
-            key, value = x.split(",")
-            data[key] = value
-        return data
 
+def show_pixels(mapping):
+    grid = [["0"] * 5 for y in range(5)]
+    for x, y in mapping:
+        grid[x][y] = "9"
+    return Image(':'.join([''.join(vals) for vals in grid]))
+
+com = Communicator(42)
 enemy = Enemy()
 while 1:
-    resp = Communication(42).wait_for_command()
+    display.show(enemy.display_health())
+    resp = com.wait_for_command()
     if resp["command"] == "attack":
-        enemy.take_damage(5)
-    display.scroll(str(enemy.health))
+        enemy.take_damage(resp["value"])
+        enemy.send_health()
