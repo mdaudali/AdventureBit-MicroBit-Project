@@ -36,9 +36,12 @@ class Communication:
         data = {}
         for x in vals:
             key, value = x.split(",")
-            data[x] = value
+            data[key] = value
         return data
 
-
-display.scroll("HI")
-Communication(42).send_command("attack", 5)
+enemy = Enemy()
+while 1:
+    resp = Communication(42).wait_for_command()
+    if resp["command"] == "attack":
+        enemy.take_damage(5)
+    display.scroll(str(enemy.health))
