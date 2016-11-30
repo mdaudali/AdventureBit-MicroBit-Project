@@ -13,8 +13,8 @@ class Enemy:
         self.health -= int(damage)
         return self.health
 
-    def send_health():
-        com.send_command("health", 0)
+    def send_health(self):
+        com.send_command("health", self.health)
 
     def displayHealth(self):
         lights = self.health * 10
