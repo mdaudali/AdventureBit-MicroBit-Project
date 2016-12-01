@@ -46,7 +46,7 @@ class Player:
         self.classDamage = 1
 
     def attack(self):
-        com.send_command("attack", self.lvl*self.classDamage)
+        com.send_command("phys_attack", self.lvl*self.classDamage)
             
     def take_damage(self, damage):
         if (random.randint(0,10)/10.0)<=self.hitProb:
@@ -74,7 +74,56 @@ class Mage(Player):
         self.health = self.maxHealth
         self.hitProb = 0.4
         self.classDamage = 4
+        self.spellChain = []
+        self.enteredChain = []
+        self.amountCorrect = 0
+    def generateSpellChain(self):
+        for t in range(self.level):
+            tempNum = random.randint(0, 1)
+            #0 - A and 1 is B
+            if (tempNum == 0):
+                self.spellChain.append("A")
+                #display.show("A")
+            elif (tempNum == 1):
+                self.spellChain.append("B")
+                #display.show("B")
+            else:
+                display.clear()
+        display.scroll(speelChain)
+                
+                
+     
+    def attack(self):
+        self.generateSpellChain()
+        display.scroll("GO!")
+        self.getSpell()
+        amountCorrect = 0
+            
+        for t in range(self.level):
+            if (self.enteredChain[t] == self.spellChain[t]):
+                self.amountCorrect += 1
+                
+        percentageCorrect = int((self.amountCorrect/ self.level))
+        if percentageCorrect>0.5:
+            com.send_command("magic_attack", self.lvl*self.classDamage*(percentageCorrect))
+            display.scroll(str(percentageCorrect))
         
+    def getSpell(self):
+        global enteredChain
+        q = 0
+        self.enteredChain=[]
+        while(q < self.level):
+            if (button_a.get_presses() > 0):
+                self.enteredChain.append("A")
+                display.show("A")
+                q += 1
+            elif (button_b.get_presses() > 0):
+                self.enteredChain.insert(q, "B")
+                display.show("B")
+                q += 1
+            else:
+                display.clear()
+                
 class Warrior(Player):
     def __init__(self):
         super().__init__()
@@ -82,6 +131,7 @@ class Warrior(Player):
         self.health = self.maxHealth
         self.hitProb = 1
         self.classDamage = 2
+        
         
 class healers(Player):
     def __init__(self):
