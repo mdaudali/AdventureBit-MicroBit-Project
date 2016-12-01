@@ -37,12 +37,21 @@ class Player:
         self.lvl = 3
         self.maxHealth = 10
         self.health = 10
+        self.hitProb = 1
+        self.damageReduction = 1
 
     def attack(self):
         com.send_command("attack", self.lvl)
             
     def take_damage(self, damage):
-        self.health -= int(damage)
+        if (random.randint(0,10)/10.0)<=self.hitProb:
+            self.health -= (int(damage)*self.damageReduction)
+        else:
+            display.set_pixel(2,3,9)
+            display.set_pixel(2,2,9)
+            display.set_pixel(2,4,9)
+            display.set_pixel(1,3,9)
+            display.set_pixel(3,3,9)
 
     def display_health(self):
         #lights = int((self.health/self.maxHealth)*100)
@@ -53,21 +62,53 @@ class Player:
                 board[0][i] = "9"
         return Image(':'.join([''.join(vals) for vals in board]))
         
-com = Comm(42)
-w, h = 5,5
-grid = [[0 for x in range(w)] for y in range(h)]
-tim = Player()
-while tim.health>0:
-    display.show(tim.display_health())
+### Changers ###
+class Mage(Player):
+    def __init__(self):
+        super().__init__()
+        self.maxHealth = 10
+        self.health = 10
+        self.hitProb = 1
+        self.damageReduction = 1
+        
+class Warrior(Player):
+    def __init__(self):
+        super().__init__()
+        ##super(__init__())
+        self.maxHealth = 10
+        self.health = 10
+        self.hitProb = 1
+        self.damageReduction = 1
+        
+class Rouge(Player):
+    def __init__(self):
+        super().__init__()
+        self.maxHealth = 10
+        self.health = 10
+        self.hitProb = 1
+        self.damageReduction = 1
+  
+        
+def test_comms():
     resp = com.wait_for_command(0)
     #display.scroll(resp["command"])
     if resp["command"] == "health":
         health = int(resp["value"])
         if health <= 0:
             display.scroll("dead")
+            tim.health = maxHealth
     elif resp["command"] == "enemy_attack":
         tim.take_damage(resp["value"])
         
+        
+### Changers ###
+com = Comm(42)
+w, h = 5,5
+grid = [[0 for x in range(w)] for y in range(h)]
+tim = Player()
+while tim.health>0:
+    display.show(tim.display_health())
+    test_comms()        
     if button_a.get_presses() > 0:
         tim.attack()
     sleep(100)
