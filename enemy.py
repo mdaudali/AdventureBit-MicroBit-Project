@@ -68,6 +68,11 @@ def show_pixels(mapping):
 
 com = Comm(42)
 enemy = Enemy()
+while True:
+    if button_a.is_pressed() or button_b.is_pressed():
+        display.show("00900:00900:00900:00000:00000")
+        sleep(100)
+        break
 while enemy.health > 0:
     display.show(enemy.display_health())
     resp = com.wait_for_command(0)
